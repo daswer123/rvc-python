@@ -1,0 +1,14 @@
+torch>=2.0.0
+torchaudio>=2.0.0
+ffmpeg-python
+soundfile
+omegaconf==2.0.6
+requests
+pyworld
+torchcrepe
+praat-parselmouth>=0.4.2
+numpy<=1.23.5
+fairseq==0.12.2
+faiss-cpu
+av
+loguru

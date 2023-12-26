@@ -1,0 +1,4 @@
+*.pyc
+venv
+test
+base_model
