@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling","hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rvc-python"
+version = "0.0.1"
+authors = [
+  { name="daswer123", email="daswerq123@gmail.com" },
+]
+description = "Use RVC via console or python scripts"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+  "requests==2.31.0",
+  "loguru",
+  "pydub",
+  "torch>=2.0.0",
+  "torch>=2.0.0",
+  "ffmpeg-python",
+  "soundfile",
+  "omegaconf==2.0.6",
+  "pyworld",
+  "torchcrepe",
+  "praat-parselmouth>=0.4.2",
+  "numpy<=1.25.3",
+  "fairseq==0.12.2",
+  "faiss-cpu",
+  "av",
+]
+
+[project.urls]
+Homepage = "https://github.com/daswer123/rvc-python"
+"Bug Tracker" = "https://github.com/daswer123/rvc-python/issues"
+
+[tool.hatch.build.targets.wheel]
+only-include=["rvc_python"]

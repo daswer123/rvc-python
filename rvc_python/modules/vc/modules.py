@@ -8,8 +8,8 @@ import soundfile as sf
 import torch
 from io import BytesIO
 
-from lib.audio import load_audio, wav2
-from lib.infer_pack.models import (
+from rvc_python.lib.audio import load_audio, wav2
+from rvc_python.lib.infer_pack.models import (
     SynthesizerTrnMs256NSFsid,
     SynthesizerTrnMs256NSFsid_nono,
     SynthesizerTrnMs768NSFsid,
@@ -20,7 +20,8 @@ from rvc_python.modules.vc.utils import *
 
 
 class VC:
-    def __init__(self, config):
+    def __init__(self, lib_dir, config):
+        self.lib_dir = lib_dir
         self.n_spk = None
         self.tgt_sr = None
         self.net_g = None
@@ -33,8 +34,8 @@ class VC:
 
         self.config = config
 
-    def get_vc(self, sid,version = "v2", *to_return_protect):
-        logger.info("Get sid: " + sid)
+    def get_vc(self,sid,version = "v2", *to_return_protect):
+        # logger.info("Get sid: " + sid)
 
         to_return_protect0 = {
             "visible": self.if_f0 != 0,
@@ -125,7 +126,7 @@ class VC:
         else:
             self.net_g = self.net_g.float()
 
-        self.pipeline = Pipeline(self.tgt_sr, self.config)
+        self.pipeline = Pipeline(self.tgt_sr, self.config,lib_dir=self.lib_dir)
         n_spk = self.cpt["config"][-3]
 
         return (
@@ -164,7 +165,7 @@ class VC:
             times = [0, 0, 0]
 
             if self.hubert_model is None:
-                self.hubert_model = load_hubert(self.config)
+                self.hubert_model = load_hubert(self.config,self.lib_dir)
 
             if file_index:
                 file_index = (

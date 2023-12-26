@@ -18,9 +18,9 @@ def get_index_path_from_model(sid):
     )
 
 
-def load_hubert(config):
+def load_hubert(config,lib_dir):
     models, _, _ = checkpoint_utils.load_model_ensemble_and_task(
-        ["base_model/hubert_base.pt"],
+        [f"{lib_dir}/base_model/hubert_base.pt"],
         suffix="",
     )
     hubert_model = models[0]

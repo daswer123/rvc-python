@@ -64,7 +64,7 @@ def change_rms(data1, sr1, data2, sr2, rate):  # 1是输入音频，2是输出�
 
 
 class Pipeline(object):
-    def __init__(self, tgt_sr, config):
+    def __init__(self, tgt_sr, config, lib_dir):
         self.x_pad, self.x_query, self.x_center, self.x_max, self.is_half = (
             config.x_pad,
             config.x_query,
@@ -81,6 +81,7 @@ class Pipeline(object):
         self.t_center = self.sr * self.x_center  # 查询切点位置
         self.t_max = self.sr * self.x_max  # 免查询时长阈值
         self.device = config.device
+        self.lib_dir = lib_dir
 
     def get_f0(
         self,
@@ -142,12 +143,12 @@ class Pipeline(object):
             f0 = f0[0].cpu().numpy()
         elif f0_method == "rmvpe":
             if not hasattr(self, "model_rmvpe"):
-                from lib.rmvpe import RMVPE
+                from rvc_python.lib.rmvpe import RMVPE
 
                 logger.info(
                     "Loading rmvpe model - base_models/rmvpe.pth"
                 )
-                rmvpe_path = Path("base_model\\rmvpe.pt")
+                rmvpe_path = Path(f"{self.lib_dir}\\base_model\\rmvpe.pt")
                 self.model_rmvpe = RMVPE(
                     rmvpe_path,
                     is_half=self.is_half,

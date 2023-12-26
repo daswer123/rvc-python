@@ -40,10 +40,10 @@ def singleton_variable(func):
 
 @singleton_variable
 class Config:
-    def __init__(self,lib_dir,device,is_half,is_dml = False):
+    def __init__(self,lib_dir,device,is_dml = False):
         self.lib_dir = lib_dir
         self.device = device
-        self.is_half = True
+        self.is_half = True if device != "cpu" else False
         self.use_jit = False
         self.n_cpu = 0
         self.gpu_name = None
@@ -97,7 +97,13 @@ class Config:
             if self.has_xpu():
                 self.device = self.instead = "xpu:0"
                 self.is_half = True
-            i_device = int(self.device.split(":")[-1])
+            # We can parse cuda:0 or cuda if cuda then i_device = 0
+            
+            if ':' in self.device:
+                i_device = int(self.device.split(":")[-1])
+            else:
+                i_device = 0  # If no number is specified, use 0 as the default value.
+
             self.gpu_name = torch.cuda.get_device_name(i_device)
             if (
                 ("16" in self.gpu_name and "V100" not in self.gpu_name.upper())
@@ -125,12 +131,12 @@ class Config:
                 with open(f"{self.lib_dir}/modules/train/preprocess.py", "w") as f:
                     f.write(strr)
         elif self.has_mps():
-            logger.info("No supported Nvidia GPU found")
+            logger.info("No supported Nvidia GPU found, using MPS")
             self.device = self.instead = "mps"
             self.is_half = False
             self.use_fp32_config()
         else:
-            logger.info("No supported Nvidia GPU found")
+            logger.info("No supported Nvidia GPU found, using CPU")
             self.device = self.instead = "cpu"
             self.is_half = False
             self.use_fp32_config()
