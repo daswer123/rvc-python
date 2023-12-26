@@ -1,4 +1,4 @@
-# rvc-python
+# RVC Python
 
 Using RVC via console or python scripts
 
