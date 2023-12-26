@@ -6,7 +6,7 @@ Feel free to make PRs or use the code for your own needs
 
 ## Changelog
 
-You can keep track of all changes on the [release page](https://github.com/daswer123/https://github.com/daswer123/rvc-python/releases)
+You can keep track of all changes on the [release page](https://github.com/daswer123/rvc-python/releases)
 
 ## Installation
 
