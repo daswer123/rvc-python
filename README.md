@@ -8,6 +8,10 @@ Feel free to make PRs or use the code for your own needs
 
 You can keep track of all changes on the [release page](https://github.com/daswer123/rvc-python/releases)
 
+## TODO
+- [ ] Batch generation via console
+- [ ] Possibility to use inference import through code
+
 ## Installation
 
 Simple installation :
