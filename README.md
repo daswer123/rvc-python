@@ -43,7 +43,7 @@ pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://downl
 ## Usage
 
 ```bash
-python -m rvc_python [-h] **-i INPUT** or **-d INPUT_DIR** -mp MODEL [-pi PITCH]
+python -m rvc_python [-h] -i INPUT or -d INPUT_DIR -mp MODEL [-pi PITCH]
                      [-ip INDEX] [-me METHOD] [-v VERSION]
                      [-o OUTPUT] [-ir INDEX_RATE]
                      [-d DEVICE]  [-fr FILTER_RADIUS]
