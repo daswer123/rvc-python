@@ -250,6 +250,7 @@ class VC:
                 traceback.print_exc()
                 paths = [path.name for path in paths]
             infos = []
+            print(paths)
             for path in paths:
                 info, opt = self.vc_single(
                     sid,
@@ -266,6 +267,7 @@ class VC:
                     rms_mix_rate,
                     protect,
                 )
+                print(info)
                 if "Success" in info:
                     try:
                         tgt_sr, audio_opt = opt
