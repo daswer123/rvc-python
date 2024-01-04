@@ -24,6 +24,8 @@ This will install all the necessary dependencies, including a **CPU support only
 
 I recommend that you install the **GPU version** to improve processing speed ( up to 3 times faster )
 
+Read the end of the README to learn how to install.
+
 ### Windows
 ```bash
 python -m venv venv
@@ -39,6 +41,8 @@ source venv\bin\activate
 pip install rvc-python
 pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
 ```
+
+
 
 ## Usage
 
@@ -168,3 +172,65 @@ print(f"Inference completed for batch processing. Check the '{results}' director
 
 https://github.com/daswer123/rvc-python/assets/22278673/6ecb590e-8a71-46aa-8ade-ba3fcfd75009
 
+
+### CUDA installation
+
+These steps are recommended for those who require **better performance** and have a compatible NVIDIA GPU.
+
+> **Note**: *to check if your NVIDIA GPU supports CUDA, visit the [official CUDA GPUs list](https://developer.nvidia.com/cuda-gpus).*
+
+To use torch with support via CUDA please follow these steps:
+
+> **Note**: *newer pytorch installations [may](https://stackoverflow.com/a/77069523) (unverified) not need Toolkit (and possibly cuDNN) installation anymore.*
+
+1. **Install NVIDIA CUDA Toolkit**:
+    For example, to install Toolkit 11.8 please  
+    - Visit [NVIDIA CUDA Toolkit Archive](https://developer.nvidia.com/cuda-11-8-0-download-archive).
+    - Select version 11.
+    - Download and install the software.
+
+2. **Install NVIDIA cuDNN**:
+    For example, to install cuDNN 8.7.0 for CUDA 11.x please  
+    - Visit [NVIDIA cuDNN Archive](https://developer.nvidia.com/rdp/cudnn-archive).
+    - Click on "Download cuDNN v8.7.0 (November 28th, 2022), for CUDA 11.x".
+    - Download and install the software.
+
+3. **Install ffmpeg**:
+
+    You can download an installer for your OS from the [ffmpeg Website](https://ffmpeg.org/download.html).  
+    
+    Or use a package manager:
+
+    - **On Ubuntu or Debian**:
+        ```bash
+        sudo apt update && sudo apt install ffmpeg
+        ```
+
+    - **On Arch Linux**:
+        ```bash
+        sudo pacman -S ffmpeg
+        ```
+
+    - **On MacOS using Homebrew** ([https://brew.sh/](https://brew.sh/)):
+        ```bash
+        brew install ffmpeg
+        ```
+
+    - **On Windows using Chocolatey** ([https://chocolatey.org/](https://chocolatey.org/)):
+        ```bash
+        choco install ffmpeg
+        ```
+
+    - **On Windows using Scoop** ([https://scoop.sh/](https://scoop.sh/)):
+        ```bash
+        scoop install ffmpeg
+        ```    
+
+4. **Install Microsoft Builders Tools**
+
+     You can download an installer for your OS from the [Microsoft Website](https://aka.ms/vs/17/release/vs_BuildTools.exe)  
+
+5. **Install PyTorch with CUDA support**:
+    ```bash
+    pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+    ```
