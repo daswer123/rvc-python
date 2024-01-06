@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rvc-python"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
   { name="daswer123", email="daswerq123@gmail.com" },
 ]
@@ -21,8 +21,8 @@ dependencies = [
   "requests==2.31.0",
   "loguru",
   "pydub",
-  "torch>=2.0.0",
-  "torch>=2.0.0",
+  "torch>=1.13.1",
+  "torchaudio>=0.13.1",
   "ffmpeg-python",
   "soundfile",
   "omegaconf==2.0.6",
