@@ -148,7 +148,7 @@ class Pipeline(object):
                 logger.info(
                     "Loading rmvpe model - base_models/rmvpe.pth"
                 )
-                rmvpe_path = Path(f"{self.lib_dir}\\base_model\\rmvpe.pt")
+                rmvpe_path = Path(self.lib_dir) / "base_model" / "rmvpe.pt"
                 self.model_rmvpe = RMVPE(
                     rmvpe_path,
                     is_half=self.is_half,
