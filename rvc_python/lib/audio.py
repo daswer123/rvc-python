@@ -31,8 +31,8 @@ def wav2(i, o, format):
 
 
 def audio2(i, o, format, sr):
-    inp = av.open(i, "rb")
-    out = av.open(o, "wb", format=format)
+    inp = av.open(i, "r") # use "r" instead of "rb"
+    out = av.open(o, "w", format=format) # use "w" instead of "wb"
     if format == "ogg":
         format = "libvorbis"
     if format == "f32le":
