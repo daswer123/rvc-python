@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rvc-python"
-version = "0.0.6"
+version = "0.0.7"
 authors = [
   { name="daswer123", email="daswerq123@gmail.com" },
 ]
@@ -31,7 +31,7 @@ dependencies = [
   "praat-parselmouth>=0.4.2",
   "numpy<=1.25.3",
   "fairseq==0.12.2",
-  "faiss-cpu",
+  "faiss-cpu==1.7.3",
   "av",
 ]
 
