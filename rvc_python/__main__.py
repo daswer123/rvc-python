@@ -9,6 +9,7 @@ parser = ArgumentParser(description="RVC inference")
 # Create a mutually exclusive group for input - only one of them can be provided
 input_group = parser.add_mutually_exclusive_group(required=True)
 input_group.add_argument("-i", "--input", type=str, help="Path to input file")
+input_group.add_argument("-a","--api", action="store_true", help="Start an API server")
 input_group.add_argument("-d", "--dir", type=str, help="Directory path containing audio files")
 
 parser.add_argument("-pi","--pitch", default=0, type=int, help="Transpose (integer, number of semitones)")
@@ -23,6 +24,8 @@ parser.add_argument("-fr","--filter_radius", type=int, default=3, help="Apply me
 parser.add_argument("-rsr","--resample_sr", type=int, default=0, help="Resample rate for the output audio")
 parser.add_argument("-rmr","--rms_mix_rate", type=float,default=0.25 ,help="Volume envelope mix rate")
 parser.add_argument("-pr",'--protect' ,type=float,default=0.33 ,help='Protect voiceless consonants and breath sounds')
+parser.add_argument("-p","--port", type=int, default=5050, help="Port number for the API server")
+parser.add_argument("-l","--listen", action="store_true", help="Listen to external connections")
 
 args = parser.parse_args()
 
@@ -59,3 +62,6 @@ elif args.dir:
         protect=args.protect,
         version=args.version
     )
+elif args.api:
+    import api
+    api.start_server(port=args.port, listen=args.listen)

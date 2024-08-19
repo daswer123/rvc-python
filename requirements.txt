@@ -12,3 +12,6 @@ fairseq==0.12.2
 faiss-cpu==1.7.3
 av
 loguru
+uvicorn
+fastapi
+pydantic

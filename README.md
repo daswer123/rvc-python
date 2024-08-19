@@ -11,6 +11,7 @@ You can keep track of all changes on the [release page](https://github.com/daswe
 ## TODO
 - [x] Batch generation via console
 - [x] Possibility to use inference import through code
+- [ ] Add an API server
 
 ## Installation
 
@@ -47,12 +48,12 @@ pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://downl
 ## Usage
 
 ```bash
-python -m rvc_python [-h] -i INPUT or -d INPUT_DIR -mp MODEL [-pi PITCH]
+python -m rvc_python [-h] -a or -i INPUT or -d INPUT_DIR -mp MODEL [-pi PITCH]
                      [-ip INDEX] [-me METHOD] [-v VERSION]
                      [-o OUTPUT] [-ir INDEX_RATE]
                      [-d DEVICE]  [-fr FILTER_RADIUS]
                      [-rsr RESAMPLE_SR]
-                     [-rmr RMS_MIX_RATE][-pr PROTECT]
+                     [-rmr RMS_MIX_RATE][-pr PROTECT] [-p PORT] [-l]
 ```
 
 ### Options
@@ -68,6 +69,9 @@ python -m rvc_python [-h] -i INPUT or -d INPUT_DIR -mp MODEL [-pi PITCH]
 
 - `-mp MODEL`, `--model MODEL` (mandatory):
     Path to model file.
+
+- `-a`, `--api`:
+     Start an API server
 
 The following options are optional:
 
@@ -105,7 +109,11 @@ The following options are optional:
 - `-pr PROTECT `, `--protect PROTECT`:
       Protects voiceless consonants and breath sounds from artifacts such as tearing in electronic music. Decrease value for increased protection but may affect indexing accuracy.
 
+- `-p PORT`, `--port PORT`:
+      Port number for the API server (default: 5050)
 
+- `-l`, `--listen`:
+      Listen to external connections
 
 ### Example Command via console
 
@@ -167,6 +175,27 @@ results = infer_files(
 print(f"Inference completed for batch processing. Check the '{results}' directory for output files.")
 ```
 
+### API Example
+
+#### POST /rvc_convert
+
+Convert a single file encoded with base64 using the model specified in the `model_path` parameter.
+
+```python
+import requests
+import base64
+
+url = "http://127.0.0.1:5050/rvc_convert"
+data = {
+    "audio_data": base64.b64encode(open("path/to/file.wav", "rb").read()).decode(),
+    "model_path": "path/to/model.pth"
+}
+
+response = requests.post(url, json=data)
+
+with open("output.wav", "wb") as f:
+    f.write(response.content)
+```
 
 ### Demo
 
