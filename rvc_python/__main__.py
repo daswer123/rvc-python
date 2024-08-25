@@ -2,66 +2,85 @@ import argparse
 import sys
 import os
 from argparse import ArgumentParser
+import uvicorn
+from rvc_python.infer import RVCInference
+from api import create_app
 
-from rvc_python.infer import infer_file,infer_files
+def main():
+    # Set up the argument parser
+    parser = ArgumentParser(description="RVC inference - CLI and API")
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-parser = ArgumentParser(description="RVC inference")
-# Create a mutually exclusive group for input - only one of them can be provided
-input_group = parser.add_mutually_exclusive_group(required=True)
-input_group.add_argument("-i", "--input", type=str, help="Path to input file")
-input_group.add_argument("-a","--api", action="store_true", help="Start an API server")
-input_group.add_argument("-d", "--dir", type=str, help="Directory path containing audio files")
+    # CLI parser
+    cli_parser = subparsers.add_parser("cli", help="Run CLI inference")
+    cli_parser.add_argument("-i", "--input", type=str, help="Path to input file")
+    cli_parser.add_argument("-d", "--dir", type=str, help="Directory path containing audio files")
+    cli_parser.add_argument("-o", "--output", type=str, default="out.wav", help="Output path for single file, or output directory for multiple files")
 
-parser.add_argument("-pi","--pitch", default=0, type=int, help="Transpose (integer, number of semitones)")
-parser.add_argument("-ip","--index", type=str, nargs='?', default="", help="Path to index file (optional)")
-parser.add_argument("-me","--method", type=str, default="harvest", choices=['harvest', "crepe", "rmvpe", 'pm'], help="Pitch extraction algorithm")
-parser.add_argument("-v","--version", type=str, default="v2", choices=['v1', "v2"], help="Model version")
-parser.add_argument("-o","--output", type=str, nargs='?', default="out.wav", help="Output path for single file, or output directory for multiple files")
-parser.add_argument("-mp","--model", type=str, required=True, help="Path to model file")
-parser.add_argument("-ir","--index_rate", type=float, default=0.5, help="Search feature ratio")
-parser.add_argument("-de","--device", type=str, default="cuda:0", help="Device to use (e.g., cpu:0, cuda:0)")
-parser.add_argument("-fr","--filter_radius", type=int, default=3, help="Apply median filtering to the pitch results")
-parser.add_argument("-rsr","--resample_sr", type=int, default=0, help="Resample rate for the output audio")
-parser.add_argument("-rmr","--rms_mix_rate", type=float,default=0.25 ,help="Volume envelope mix rate")
-parser.add_argument("-pr",'--protect' ,type=float,default=0.33 ,help='Protect voiceless consonants and breath sounds')
-parser.add_argument("-p","--port", type=int, default=5050, help="Port number for the API server")
-parser.add_argument("-l","--listen", action="store_true", help="Listen to external connections")
+    # API parser
+    api_parser = subparsers.add_parser("api", help="Start API server")
+    api_parser.add_argument("-p", "--port", type=int, default=5050, help="Port number for the API server")
+    api_parser.add_argument("-l", "--listen", action="store_true", help="Listen to external connections")
 
-args = parser.parse_args()
+    # Common arguments for both CLI and API
+    for subparser in [cli_parser, api_parser]:
+        subparser.add_argument("-mp", "--model", type=str, required=True, help="Path to model file")
+        subparser.add_argument("-ip", "--index", type=str, default="", help="Path to index file (optional)")
+        subparser.add_argument("-de", "--device", type=str, default="cpu:0", help="Device to use (e.g., cpu:0, cuda:0)")
+        subparser.add_argument("-me", "--method", type=str, default="rmvpe", choices=['harvest', "crepe", "rmvpe", 'pm'], help="Pitch extraction algorithm")
+        subparser.add_argument("-v", "--version", type=str, default="v2", choices=['v1', "v2"], help="Model version")
+        subparser.add_argument("-ir", "--index_rate", type=float, default=0.6, help="Search feature ratio")
+        subparser.add_argument("-fr", "--filter_radius", type=int, default=3, help="Apply median filtering to the pitch results")
+        subparser.add_argument("-rsr", "--resample_sr", type=int, default=0, help="Resample rate for the output audio")
+        subparser.add_argument("-rmr", "--rms_mix_rate", type=float, default=0.25, help="Volume envelope mix rate")
+        subparser.add_argument("-pr", '--protect', type=float, default=0.5, help='Protect voiceless consonants and breath sounds')
+        subparser.add_argument("-pi", "--pitch", default=0, type=int, help="Transpose (integer, number of semitones)")
 
-if args.input:
-    # Single file processing
-    inferred_path = infer_file(
-        input_path=args.input,
-        model_path=args.model,
-        index_path=args.index,
-        device=args.device,
+    args = parser.parse_args()
+
+    # Initialize RVCInference
+    rvc = RVCInference(device=args.device)
+    rvc.load_model(args.model)
+    rvc.set_params(
         f0method=args.method,
         f0up_key=args.pitch,
-        opt_path=args.output,
         index_rate=args.index_rate,
         filter_radius=args.filter_radius,
         resample_sr=args.resample_sr,
         rms_mix_rate=args.rms_mix_rate,
-        protect=args.protect,
-        version=args.version
+        protect=args.protect
     )
-elif args.dir:
-    # Directory processing
-    processed_files = infer_files(
-        dir_path=args.dir,
-        model_path=args.model,
-        index_path=args.index,
-        device=args.device,
-        f0method=args.method,
-        opt_dir=os.path.abspath(os.path.dirname(args.output)),
-        index_rate=args.index_rate,
-        filter_radius=args.filter_radius,
-        resample_sr=args.resample_sr,
-        rms_mix_rate=args.rms_mix_rate,
-        protect=args.protect,
-        version=args.version
-    )
-elif args.api:
-    import api
-    api.start_server(port=args.port, listen=args.listen)
+
+    # Handle CLI command
+    if args.command == "cli":
+        if args.input:
+            # Process single file
+            rvc.infer_file(args.input, args.output)
+            print(f"Processed file saved to: {args.output}")
+        elif args.dir:
+            # Process directory
+            output_files = rvc.infer_dir(args.dir, args.output)
+            print(f"Processed {len(output_files)} files. Output directory: {args.output}")
+        else:
+            print("Error: Either --input or --dir must be specified for CLI mode.")
+            sys.exit(1)
+
+    # Handle API command
+    elif args.command == "api":
+        # Create and configure FastAPI app
+        app = create_app()
+        app.state.rvc = rvc
+
+        # Set up server options
+        host = "0.0.0.0" if args.listen else "127.0.0.1"
+        print(f"Starting API server on {host}:{args.port}")
+
+        # Run the server
+        uvicorn.run(app, host=host, port=args.port)
+
+    else:
+        print("Error: Invalid command. Use 'cli' or 'api'.")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
