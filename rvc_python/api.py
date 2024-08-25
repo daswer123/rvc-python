@@ -9,6 +9,9 @@ import shutil
 import zipfile
 import os
 
+class SetDeviceRequest(BaseModel):
+    device: str
+
 class ConvertAudioRequest(BaseModel):
     audio_data: str
 
@@ -89,8 +92,9 @@ def setup_routes(app: FastAPI):
             raise HTTPException(status_code=500, detail=str(e))
 
     @app.post("/set_device")
-    def set_device(device: str):
+    def set_device(request: SetDeviceRequest):
         try:
+            device = request.device
             app.state.rvc.set_device(device)
             return JSONResponse(content={"message": f"Device set to {device}"})
         except Exception as e:
