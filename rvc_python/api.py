@@ -18,8 +18,8 @@ class SetParamsRequest(BaseModel):
 def setup_routes(app: FastAPI):
     @app.post("/convert")
     def rvc_convert(request: ConvertAudioRequest):
-        tmp_input = tempfile.NamedTemporaryFile(delete=True, suffix=".wav")
-        tmp_output = tempfile.NamedTemporaryFile(delete=True, suffix=".wav")
+        tmp_input = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+        tmp_output = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
         try:
             logger.info("Received request to convert audio")
             audio_data = base64.b64decode(request.audio_data)
@@ -37,6 +37,8 @@ def setup_routes(app: FastAPI):
         finally:
             tmp_input.close()
             tmp_output.close()
+            os.unlink(tmp_input.name)
+            os.unlink(tmp_output.name)
 
     @app.get("/models")
     def list_models():
