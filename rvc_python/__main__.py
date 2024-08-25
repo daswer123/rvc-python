@@ -4,7 +4,7 @@ import os
 from argparse import ArgumentParser
 import uvicorn
 from rvc_python.infer import RVCInference
-from api import create_app
+from rvc_python.api import create_app
 
 def main():
     # Set up the argument parser

@@ -8,3 +8,5 @@ out
 2.mp3
 /models
 *.wav
+.DS_Store
+/rvc_models
