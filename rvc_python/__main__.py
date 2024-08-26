@@ -25,6 +25,7 @@ def main():
     # Common arguments for both CLI and API
     for subparser in [cli_parser, api_parser]:
         subparser.add_argument("-mp", "--model", type=str, required=True, help="Path to model file")
+        subparser.add_argument("-md", "--models_dir", type=str, default="rvc_models", help="Directory to store models")
         subparser.add_argument("-ip", "--index", type=str, default="", help="Path to index file (optional)")
         subparser.add_argument("-de", "--device", type=str, default="cpu:0", help="Device to use (e.g., cpu:0, cuda:0)")
         subparser.add_argument("-me", "--method", type=str, default="rmvpe", choices=['harvest', "crepe", "rmvpe", 'pm'], help="Pitch extraction algorithm")
@@ -39,7 +40,7 @@ def main():
     args = parser.parse_args()
 
     # Initialize RVCInference
-    rvc = RVCInference(device=args.device)
+    rvc = RVCInference(models_dir=args.models_dir, device=args.device)
     rvc.load_model(args.model)
     rvc.set_params(
         f0method=args.method,

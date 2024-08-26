@@ -244,6 +244,7 @@ You can add new models by:
 
 ### Model Options
 - `-mp`, `--model`: Path to the RVC model file
+- `-md`, `--models_dir`: Directory containing RVC models (default: `rvc_models` in the current directory)
 - `-ip`, `--index`: Path to the index file (optional)
 - `-v`, `--version`: Model version (v1 or v2)
 
