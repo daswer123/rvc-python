@@ -25,6 +25,8 @@ https://github.com/daswer123/rvc-python/assets/22278673/6ecb590e-8a71-46aa-8ade-
 - Python module for integration into other projects
 - API server for remote processing
 - Support for both CPU and GPU acceleration
+- Dynamic model loading and unloading
+- Flexible model directory management
 
 ## Installation
 
@@ -78,12 +80,12 @@ python -m rvc_python cli -i input.wav -o output.wav -mp path/to/model.pth -de cu
 Start the API server:
 
 ```bash
-python -m rvc_python api -mp MODEL [-p PORT] [-l] [options]
+python -m rvc_python api [-p PORT] [-l] [options]
 ```
 
 Example:
 ```bash
-python -m rvc_python api -mp path/to/model.pth -p 5050 -l
+python -m rvc_python api -p 5050 -l
 ```
 
 ### Python Module
@@ -234,6 +236,7 @@ rvc_models/
 You can add new models by:
 1. Manually placing them in the `rvc_models` directory.
 2. Using the `/upload_model` API endpoint to upload a zip file containing the model files.
+3. Using the `/set_models_dir` API endpoint to change the models directory dynamically.
 
 ## Options
 
@@ -243,7 +246,7 @@ You can add new models by:
 - `-o`, `--output`: Output file or directory
 
 ### Model Options
-- `-mp`, `--model`: Path to the RVC model file
+- `-mp`, `--model`: Path to the RVC model file (required for CLI, optional for API)
 - `-md`, `--models_dir`: Directory containing RVC models (default: `rvc_models` in the current directory)
 - `-ip`, `--index`: Path to the index file (optional)
 - `-v`, `--version`: Model version (v1 or v2)
@@ -261,6 +264,7 @@ You can add new models by:
 ### API Server Options
 - `-p`, `--port`: API server port (default: 5050)
 - `-l`, `--listen`: Allow external connections to API server
+- `-pm`, `--preload-model`: Preload a model when starting the API server (optional)
 
 ## Changelog
 
