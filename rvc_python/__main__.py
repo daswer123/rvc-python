@@ -16,15 +16,16 @@ def main():
     cli_parser.add_argument("-i", "--input", type=str, help="Path to input file")
     cli_parser.add_argument("-d", "--dir", type=str, help="Directory path containing audio files")
     cli_parser.add_argument("-o", "--output", type=str, default="out.wav", help="Output path for single file, or output directory for multiple files")
+    cli_parser.add_argument("-mp", "--model", type=str, required=True, help="Path to model file")
 
     # API parser
     api_parser = subparsers.add_parser("api", help="Start API server")
     api_parser.add_argument("-p", "--port", type=int, default=5050, help="Port number for the API server")
     api_parser.add_argument("-l", "--listen", action="store_true", help="Listen to external connections")
+    api_parser.add_argument("-pm", "--preload-model", type=str, help="Preload model on startup (optional)")
 
     # Common arguments for both CLI and API
     for subparser in [cli_parser, api_parser]:
-        subparser.add_argument("-mp", "--model", type=str, required=True, help="Path to model file")
         subparser.add_argument("-md", "--models_dir", type=str, default="rvc_models", help="Directory to store models")
         subparser.add_argument("-ip", "--index", type=str, default="", help="Path to index file (optional)")
         subparser.add_argument("-de", "--device", type=str, default="cpu:0", help="Device to use (e.g., cpu:0, cuda:0)")
@@ -41,7 +42,6 @@ def main():
 
     # Initialize RVCInference
     rvc = RVCInference(models_dir=args.models_dir, device=args.device)
-    rvc.load_model(args.model)
     rvc.set_params(
         f0method=args.method,
         f0up_key=args.pitch,
@@ -54,6 +54,7 @@ def main():
 
     # Handle CLI command
     if args.command == "cli":
+        rvc.load_model(args.model)
         if args.input:
             # Process single file
             rvc.infer_file(args.input, args.output)
@@ -71,6 +72,9 @@ def main():
         # Create and configure FastAPI app
         app = create_app()
         app.state.rvc = rvc
+
+        if args.preload_model:
+            rvc.load_model(args.preload_model)
 
         # Set up server options
         host = "0.0.0.0" if args.listen else "127.0.0.1"

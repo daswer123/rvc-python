@@ -18,9 +18,15 @@ class ConvertAudioRequest(BaseModel):
 class SetParamsRequest(BaseModel):
     params: dict
 
+class SetModelsDirRequest(BaseModel):
+    models_dir: str
+
 def setup_routes(app: FastAPI):
     @app.post("/convert")
     def rvc_convert(request: ConvertAudioRequest):
+        if not app.state.rvc.current_model:
+            raise HTTPException(status_code=400, detail="No model loaded. Please load a model first.")
+
         tmp_input = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
         tmp_output = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
         try:
@@ -99,6 +105,15 @@ def setup_routes(app: FastAPI):
             device = request.device
             app.state.rvc.set_device(device)
             return JSONResponse(content={"message": f"Device set to {device}"})
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+
+    @app.post("/set_models_dir")
+    def set_models_dir(request: SetModelsDirRequest):
+        try:
+            new_models_dir = request.models_dir
+            app.state.rvc.set_models_dir(new_models_dir)
+            return JSONResponse(content={"message": f"Models directory set to {new_models_dir}"})
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
 

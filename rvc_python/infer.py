@@ -43,6 +43,12 @@ class RVCInference:
                     }
         return models
 
+    def set_models_dir(self, new_models_dir):
+        if not os.path.isdir(new_models_dir):
+            raise ValueError(f"Directory {new_models_dir} does not exist")
+        self.models_dir = new_models_dir
+        self.models = self._load_available_models()
+    
     def list_models(self):
         """Returns a list of available models."""
         return list(self.models.keys())
