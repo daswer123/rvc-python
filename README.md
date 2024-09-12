@@ -38,9 +38,11 @@ pip install rvc-python
 
 ### Recommended Installation (with GPU support)
 
+Recommended python version: 3.10
+
 For Windows:
 ```bash
-python -m venv venv
+py -3.10 -m venv venv
 venv\Scripts\activate
 pip install rvc-python
 pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
@@ -48,7 +50,7 @@ pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://downl
 
 For Linux:
 ```bash
-python -m venv venv
+python3.10 -m venv venv
 source venv/bin/activate
 pip install rvc-python
 pip install torch==2.1.1+cu118 torchaudio==2.1.1+cu118 --index-url https://download.pytorch.org/whl/cu118
