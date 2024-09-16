@@ -38,7 +38,7 @@ def audio2(i, o, format, sr):
     if format == "f32le":
         format = "pcm_f32le"
 
-    ostream = out.add_stream(format, channels=1)
+    ostream = out.add_stream(format)
     ostream.sample_rate = sr
 
     for frame in inp.decode(audio=0):
