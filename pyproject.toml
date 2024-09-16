@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rvc-python"
-version = "0.1.3"
+version = "0.1.4"
 authors = [
   { name="daswer123", email="daswerq123@gmail.com" },
 ]
