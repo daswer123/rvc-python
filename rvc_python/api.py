@@ -126,8 +126,8 @@ def setup_routes(app: FastAPI):
             raise HTTPException(status_code=400, detail=str(e))
 
     @app.get("/voices")
-    def list_voices():
-        return JSONResponse(content={"voices": edge_tts.list_voices()})
+    async def list_voices():
+        return JSONResponse(content={"voices": await edge_tts.list_voices()})
 
     @app.post("/tts")
     async def tts(request: TTSRequest):
