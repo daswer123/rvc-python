@@ -25,6 +25,9 @@ class SetModelsDirRequest(BaseModel):
 class TTSRequest(BaseModel):
     text: str
     voice: str
+    rate: str = "+0%",
+    volume: str = "+0%",
+    pitch: str = "+0Hz",
 
 def setup_routes(app: FastAPI):
     @app.post("/convert")
@@ -129,7 +132,7 @@ def setup_routes(app: FastAPI):
             logger.info("Received request to generate audio by tts")
             output_path = tmp_output.name
             
-            communicate = edge_tts.Communicate(request.text, request.voice)
+            communicate = edge_tts.Communicate(request.text, request.voice, request.rate, request.volume, request.pitch)
             await communicate.save(output_path)
 
             output_data = tmp_output.read()
