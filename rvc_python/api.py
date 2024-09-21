@@ -22,6 +22,10 @@ class SetParamsRequest(BaseModel):
 class SetModelsDirRequest(BaseModel):
     models_dir: str
 
+class TTSRequest(BaseModel):
+    text: str
+    voice: str
+
 def setup_routes(app: FastAPI):
     @app.post("/convert")
     def rvc_convert(request: ConvertAudioRequest):
@@ -119,7 +123,7 @@ def setup_routes(app: FastAPI):
             raise HTTPException(status_code=400, detail=str(e))
 
     @app.post("/tts")
-    async def tts(request: SetModelsDirRequest):
+    async def tts(request: TTSRequest):
         tmp_output = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
         try:
             logger.info("Received request to generate audio by tts")
