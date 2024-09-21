@@ -135,9 +135,9 @@ def setup_routes(app: FastAPI):
             communicate = edge_tts.Communicate(
                 text=request.text,
                 voice=request.voice,
-                rate=request.rate | "+0%",
-                volume=request.volume | "+0%",
-                pitch=request.pitch | "+0Hz"
+                rate=request.rate,
+                volume=request.volume,
+                pitch=request.pitch
             )
             await communicate.save(output_path)
 
