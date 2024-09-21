@@ -25,9 +25,9 @@ class SetModelsDirRequest(BaseModel):
 class TTSRequest(BaseModel):
     text: str
     voice: str
-    rate: str | None = None
-    volume: str | None = None
-    pitch: str | None = None
+    rate: str | None = "+0%"
+    volume: str | None = "+0%"
+    pitch: str | None = "+0Hz"
 
 def setup_routes(app: FastAPI):
     @app.post("/convert")
