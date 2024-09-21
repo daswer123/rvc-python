@@ -16,3 +16,4 @@ uvicorn
 fastapi
 pydantic
 python-multipart
+edge-tts

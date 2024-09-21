@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, JSONResponse
 from loguru import logger
 from pydantic import BaseModel
+import edge_tts
 import tempfile
 import base64
 import shutil
@@ -116,6 +117,25 @@ def setup_routes(app: FastAPI):
             return JSONResponse(content={"message": f"Models directory set to {new_models_dir}"})
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
+
+    @app.post("/tts")
+    async def tts(request: SetModelsDirRequest):
+        tmp_output = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+        try:
+            logger.info("Received request to generate audio by tts")
+            output_path = tmp_output.name
+            
+            communicate = edge_tts.Communicate(request.text, request.voice)
+            await communicate.save(output_path)
+
+            output_data = tmp_output.read()
+            return Response(content=output_data, media_type="audio/wav")
+        except Exception as e:
+            logger.error(e)
+            raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        finally:
+            tmp_output.close()
+            os.unlink(tmp_output.name)
 
 def create_app():
     app = FastAPI()
