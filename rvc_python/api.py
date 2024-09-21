@@ -125,6 +125,10 @@ def setup_routes(app: FastAPI):
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
 
+    @app.get("/voices")
+    def list_voices():
+        return JSONResponse(content={"voices": edge_tts.list_voices()})
+
     @app.post("/tts")
     async def tts(request: TTSRequest):
         if not app.state.rvc.current_model:
