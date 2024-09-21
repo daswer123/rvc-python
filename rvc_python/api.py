@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response, JSONResponse
 from loguru import logger
 from pydantic import BaseModel
+import edge_tts
 import tempfile
 import base64
 import shutil
@@ -20,6 +21,13 @@ class SetParamsRequest(BaseModel):
 
 class SetModelsDirRequest(BaseModel):
     models_dir: str
+
+class TTSRequest(BaseModel):
+    text: str
+    voice: str | None = "Microsoft Server Speech Text to "
+    rate: str | None = "+0%"
+    volume: str | None = "+0%"
+    pitch: str | None = "+0Hz"
 
 def setup_routes(app: FastAPI):
     @app.post("/convert")
@@ -116,6 +124,44 @@ def setup_routes(app: FastAPI):
             return JSONResponse(content={"message": f"Models directory set to {new_models_dir}"})
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
+
+    @app.get("/voices")
+    async def list_voices():
+        return JSONResponse(content={"voices": await edge_tts.list_voices()})
+
+    @app.post("/tts")
+    async def tts(request: TTSRequest):
+        if not app.state.rvc.current_model:
+            raise HTTPException(status_code=400, detail="No model loaded. Please load a model first.")
+
+        tmp_input = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+        tmp_output = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
+        try:
+            logger.info("Received request to generate audio by tts")
+            input_path = tmp_input.name
+            output_path = tmp_output.name
+            
+            communicate = edge_tts.Communicate(
+                text=request.text,
+                voice=request.voice,
+                rate=request.rate,
+                volume=request.volume,
+                pitch=request.pitch
+            )
+            await communicate.save(input_path)
+
+            app.state.rvc.infer_file(input_path, output_path)
+
+            output_data = tmp_output.read()
+            return Response(content=output_data, media_type="audio/wav")
+        except Exception as e:
+            logger.error(e)
+            raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        finally:
+            tmp_input.close()
+            tmp_output.close()
+            os.unlink(tmp_input.name)
+            os.unlink(tmp_output.name)
 
 def create_app():
     app = FastAPI()

@@ -36,6 +36,7 @@ dependencies = [
   "fastapi",
   "pydantic",
   "python-multipart",
+  "edge-tts",
 ]
 
 [project.urls]
