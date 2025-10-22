@@ -127,7 +127,7 @@ class RVCInference:
         model_info = self.models[self.current_model]
         file_index = model_info.get("index", "")
 
-        wav_opt = self.vc.vc_single(
+        result = self.vc.vc_single(
             sid=0,
             input_audio_path=input_path,
             f0_up_key=self.f0up_key,
@@ -142,6 +142,18 @@ class RVCInference:
             file_index2=""
         )
 
+        # Handle error case where vc_single returns a tuple (info, (times, wav_opt))
+        if isinstance(result, tuple) and len(result) == 2:
+            info, audio_data = result
+            if isinstance(audio_data, tuple):
+                times, wav_opt = audio_data
+                if wav_opt is None:
+                    raise RuntimeError(f"Voice conversion failed: {info}")
+            else:
+                wav_opt = audio_data
+        else:
+            wav_opt = result
+        
         wavfile.write(output_path, self.vc.tgt_sr, wav_opt)
         return output_path
 

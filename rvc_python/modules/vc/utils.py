@@ -19,6 +19,11 @@ def get_index_path_from_model(sid):
 
 
 def load_hubert(config,lib_dir):
+    import torch
+    # Temporarily allow unsafe globals for fairseq models
+    from fairseq.data.dictionary import Dictionary
+    torch.serialization.add_safe_globals([Dictionary])
+    
     models, _, _ = checkpoint_utils.load_model_ensemble_and_task(
         [f"{lib_dir}/base_model/hubert_base.pt"],
         suffix="",

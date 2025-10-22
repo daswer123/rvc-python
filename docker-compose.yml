@@ -1,0 +1,28 @@
+services:
+  rvc:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/code
+      - ./models/:/models/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    stdin_open: true
+    tty: true
+    ports:
+      - 5050:5050
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TORCH_CUDA_ARCH_LIST="5.0;6.0;7.0;7.5;8.0;8.6;9.0;12.0"
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: 'nvidia'
+              count: all
+              capabilities: [gpu]
+
+              # python -m rvc_python cli -i input.wav -o output.wav -mp path/to/model.pth -de cuda:0
