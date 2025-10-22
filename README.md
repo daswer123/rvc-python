@@ -263,6 +263,15 @@ You can add new models by:
 - `-rmr`, `--rms_mix_rate`: Volume envelope mix rate
 - `-pr`, `--protect`: Protection for voiceless consonants
 
+### Docker (nvidia blackwell support)
+You can run the rvc-python codebase in docker for easier debugging & contributing. It was implemented to help support newer rtx 5000 series hardware, but works with CPU as well. Run:
+
+```docker compose up -d```
+
+Then, make your desired edits in `test.py` in the root of the project. Make sure to add your models to the `./models` directory. Then run:
+
+```docker compose exec rvc python test.py```
+
 ### API Server Options
 - `-p`, `--port`: API server port (default: 5050)
 - `-l`, `--listen`: Allow external connections to API server
